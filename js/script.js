@@ -1,6 +1,25 @@
 // Menu mobile toggle
 const menuToggle = document.querySelector('.menu-toggle');
 const navMenu = document.querySelector('.nav-menu');
+const body = document.body;
+const heroSection = document.getElementById('accueil');
+
+// Empêcher le scroll sur la page d'accueil
+function preventScrollOnHomepage() {
+    if (window.location.hash === '' || window.location.hash === '#accueil') {
+        body.classList.add('no-scroll');
+    } else {
+        body.classList.remove('no-scroll');
+    }
+}
+
+// Initialiser l'état du scroll
+preventScrollOnHomepage();
+
+// Observer les changements de hash pour gérer le scroll
+window.addEventListener('hashchange', () => {
+    preventScrollOnHomepage();
+});
 
 if (menuToggle) {
     menuToggle.addEventListener('click', () => {
@@ -12,16 +31,47 @@ if (menuToggle) {
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const targetId = this.getAttribute('href');
+        const target = document.querySelector(targetId);
+        
         if (target) {
+            // Si on clique sur un lien autre que l'accueil, permettre le scroll
+            if (targetId !== '#accueil') {
+                body.classList.remove('no-scroll');
+            }
+            
             target.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start'
             });
+            
+            // Mettre à jour l'URL sans déclencher de scroll
+            window.history.pushState(null, null, targetId);
+            
             // Fermer le menu mobile si ouvert
             navMenu.classList.remove('active');
         }
     });
+});
+
+// Empêcher le scroll avec la molette sur la page d'accueil
+let isOnHomepage = () => {
+    return window.location.hash === '' || window.location.hash === '#accueil';
+};
+
+window.addEventListener('wheel', function(e) {
+    if (isOnHomepage() && body.classList.contains('no-scroll')) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+// Empêcher le scroll avec les touches fléchées
+window.addEventListener('keydown', function(e) {
+    if (isOnHomepage() && body.classList.contains('no-scroll')) {
+        if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) {
+            e.preventDefault();
+        }
+    }
 });
 
 // Gestion du formulaire de contact
