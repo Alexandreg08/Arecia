@@ -4,21 +4,69 @@ const navMenu = document.querySelector('.nav-menu');
 const body = document.body;
 const heroSection = document.getElementById('accueil');
 
-// Empêcher le scroll sur la page d'accueil
-function preventScrollOnHomepage() {
-    if (window.location.hash === '' || window.location.hash === '#accueil') {
+// Fonction pour gérer le scroll selon la section visible
+function manageScrollLock() {
+    if (!heroSection) return;
+    
+    // Vérifier si la section accueil est visible à l'écran
+    const rect = heroSection.getBoundingClientRect();
+    const isAccueilVisible = rect.top >= 0 && rect.top < window.innerHeight && rect.bottom > 0;
+    
+    if (isAccueilVisible && (rect.top === 0 || (rect.top >= -50 && rect.top <= 50))) {
+        // On est sur la page d'accueil, bloquer le scroll
         body.classList.add('no-scroll');
+        // S'assurer qu'on est bien en haut de la page
+        if (window.scrollY > 0) {
+            window.scrollTo(0, 0);
+        }
     } else {
+        // On n'est pas sur l'accueil, permettre le scroll
         body.classList.remove('no-scroll');
     }
 }
 
-// Initialiser l'état du scroll
-preventScrollOnHomepage();
+// Observer pour détecter quand on est sur la section accueil
+const homepageObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.9) {
+            // La section accueil est visible à plus de 90%, bloquer le scroll
+            body.classList.add('no-scroll');
+            window.scrollTo(0, 0);
+        } else if (!entry.isIntersecting || entry.intersectionRatio < 0.5) {
+            // On a quitté la section accueil, permettre le scroll
+            body.classList.remove('no-scroll');
+        }
+    });
+}, {
+    threshold: [0, 0.5, 0.9, 1],
+    rootMargin: '0px'
+});
+
+// Observer la section accueil
+if (heroSection) {
+    homepageObserver.observe(heroSection);
+}
+
+// Initialiser l'état du scroll au chargement
+if (window.location.hash === '' || window.location.hash === '#accueil') {
+    body.classList.add('no-scroll');
+    window.scrollTo(0, 0);
+}
 
 // Observer les changements de hash pour gérer le scroll
 window.addEventListener('hashchange', () => {
-    preventScrollOnHomepage();
+    setTimeout(() => {
+        manageScrollLock();
+    }, 100);
+});
+
+// Vérifier la position au scroll
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+        manageScrollLock();
+    }, 10);
 });
 
 if (menuToggle) {
@@ -38,6 +86,12 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             // Si on clique sur un lien autre que l'accueil, permettre le scroll
             if (targetId !== '#accueil') {
                 body.classList.remove('no-scroll');
+            } else {
+                // Si on clique sur accueil, bloquer le scroll après le scroll
+                setTimeout(() => {
+                    body.classList.add('no-scroll');
+                    window.scrollTo(0, 0);
+                }, 500);
             }
             
             target.scrollIntoView({
@@ -55,21 +109,23 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // Empêcher le scroll avec la molette sur la page d'accueil
-let isOnHomepage = () => {
-    return window.location.hash === '' || window.location.hash === '#accueil';
-};
-
 window.addEventListener('wheel', function(e) {
-    if (isOnHomepage() && body.classList.contains('no-scroll')) {
-        e.preventDefault();
+    if (body.classList.contains('no-scroll')) {
+        const rect = heroSection?.getBoundingClientRect();
+        if (rect && rect.top >= 0 && rect.top < 50) {
+            e.preventDefault();
+        }
     }
 }, { passive: false });
 
 // Empêcher le scroll avec les touches fléchées
 window.addEventListener('keydown', function(e) {
-    if (isOnHomepage() && body.classList.contains('no-scroll')) {
-        if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) {
-            e.preventDefault();
+    if (body.classList.contains('no-scroll')) {
+        const rect = heroSection?.getBoundingClientRect();
+        if (rect && rect.top >= 0 && rect.top < 50) {
+            if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) {
+                e.preventDefault();
+            }
         }
     }
 });
