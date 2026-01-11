@@ -2,106 +2,79 @@
 const menuToggle = document.querySelector('.menu-toggle');
 const navMenu = document.querySelector('.nav-menu');
 const body = document.body;
+
+// Toutes les sections
+const sections = document.querySelectorAll('section[id]');
 const heroSection = document.getElementById('accueil');
 
-// Fonction pour gérer le scroll selon la section visible
-function manageScrollLock() {
-    if (!heroSection) return;
+// Fonction pour afficher une section et cacher les autres
+function showSection(sectionId) {
+    sections.forEach(section => {
+        section.classList.remove('active');
+    });
     
-    // Vérifier si la section accueil est visible à l'écran
-    const rect = heroSection.getBoundingClientRect();
-    const isAccueilVisible = rect.top >= 0 && rect.top < window.innerHeight && rect.bottom > 0;
-    
-    if (isAccueilVisible && (rect.top === 0 || (rect.top >= -50 && rect.top <= 50))) {
-        // On est sur la page d'accueil, bloquer le scroll
-        body.classList.add('no-scroll');
-        // S'assurer qu'on est bien en haut de la page
-        if (window.scrollY > 0) {
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
+        
+        // Si c'est l'accueil, bloquer le scroll
+        if (sectionId === 'accueil') {
+            body.classList.add('no-scroll');
             window.scrollTo(0, 0);
+        } else {
+            // Pour les autres sections, permettre le scroll mais seulement dans la section
+            body.classList.remove('no-scroll');
+            // S'assurer qu'on est en haut de la section
+            window.scrollTo(0, 0);
+            // Attendre un peu pour que la section soit affichée
+            setTimeout(() => {
+                targetSection.scrollTop = 0;
+            }, 10);
         }
-    } else {
-        // On n'est pas sur l'accueil, permettre le scroll
-        body.classList.remove('no-scroll');
+        
+        // Mettre à jour l'URL
+        window.history.pushState({ section: sectionId }, null, `#${sectionId}`);
     }
 }
 
-// Observer pour détecter quand on est sur la section accueil
-const homepageObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.9) {
-            // La section accueil est visible à plus de 90%, bloquer le scroll
-            body.classList.add('no-scroll');
-            window.scrollTo(0, 0);
-        } else if (!entry.isIntersecting || entry.intersectionRatio < 0.5) {
-            // On a quitté la section accueil, permettre le scroll
-            body.classList.remove('no-scroll');
-        }
-    });
-}, {
-    threshold: [0, 0.5, 0.9, 1],
-    rootMargin: '0px'
-});
-
-// Observer la section accueil
-if (heroSection) {
-    homepageObserver.observe(heroSection);
+// Initialiser : afficher l'accueil par défaut
+function init() {
+    const hash = window.location.hash.slice(1); // Enlever le #
+    if (hash && document.getElementById(hash)) {
+        showSection(hash);
+    } else {
+        showSection('accueil');
+    }
 }
 
-// Initialiser l'état du scroll au chargement
-if (window.location.hash === '' || window.location.hash === '#accueil') {
-    body.classList.add('no-scroll');
-    window.scrollTo(0, 0);
-}
+// Initialiser au chargement
+init();
 
-// Observer les changements de hash pour gérer le scroll
+// Gérer les changements de hash (navigation navigateur)
 window.addEventListener('hashchange', () => {
-    setTimeout(() => {
-        manageScrollLock();
-    }, 100);
+    const hash = window.location.hash.slice(1);
+    if (hash && document.getElementById(hash)) {
+        showSection(hash);
+    } else {
+        showSection('accueil');
+    }
 });
 
-// Vérifier la position au scroll
-let scrollTimeout;
-window.addEventListener('scroll', () => {
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(() => {
-        manageScrollLock();
-    }, 10);
-});
-
+// Menu mobile toggle
 if (menuToggle) {
     menuToggle.addEventListener('click', () => {
         navMenu.classList.toggle('active');
     });
 }
 
-// Smooth scroll pour les liens de navigation
+// Navigation par clic sur les liens du menu
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        const targetId = this.getAttribute('href');
-        const target = document.querySelector(targetId);
+        const targetId = this.getAttribute('href').slice(1); // Enlever le #
         
-        if (target) {
-            // Si on clique sur un lien autre que l'accueil, permettre le scroll
-            if (targetId !== '#accueil') {
-                body.classList.remove('no-scroll');
-            } else {
-                // Si on clique sur accueil, bloquer le scroll après le scroll
-                setTimeout(() => {
-                    body.classList.add('no-scroll');
-                    window.scrollTo(0, 0);
-                }, 500);
-            }
-            
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-            
-            // Mettre à jour l'URL sans déclencher de scroll
-            window.history.pushState(null, null, targetId);
-            
+        if (targetId && document.getElementById(targetId)) {
+            showSection(targetId);
             // Fermer le menu mobile si ouvert
             navMenu.classList.remove('active');
         }
@@ -111,24 +84,40 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // Empêcher le scroll avec la molette sur la page d'accueil
 window.addEventListener('wheel', function(e) {
     if (body.classList.contains('no-scroll')) {
-        const rect = heroSection?.getBoundingClientRect();
-        if (rect && rect.top >= 0 && rect.top < 50) {
-            e.preventDefault();
-        }
+        e.preventDefault();
     }
 }, { passive: false });
 
-// Empêcher le scroll avec les touches fléchées
+// Empêcher le scroll avec les touches fléchées sur l'accueil
 window.addEventListener('keydown', function(e) {
     if (body.classList.contains('no-scroll')) {
-        const rect = heroSection?.getBoundingClientRect();
-        if (rect && rect.top >= 0 && rect.top < 50) {
-            if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) {
-                e.preventDefault();
-            }
+        if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) {
+            e.preventDefault();
         }
     }
 });
+
+// Empêcher le scroll vers le haut depuis les autres sections (pour ne pas revenir à l'accueil)
+let lastScrollTop = 0;
+window.addEventListener('scroll', function() {
+    const currentSection = document.querySelector('section.active');
+    
+    // Si on est sur une section autre que l'accueil
+    if (currentSection && currentSection.id !== 'accueil') {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Si on essaie de scroller vers le haut et qu'on est déjà en haut de la section
+        if (scrollTop < lastScrollTop && scrollTop <= 0) {
+            // Empêcher de scroller au-delà du début de la section
+            window.scrollTo(0, 0);
+        }
+        
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    } else if (currentSection && currentSection.id === 'accueil') {
+        // Si on est sur l'accueil, empêcher tout scroll
+        window.scrollTo(0, 0);
+    }
+}, { passive: false });
 
 // Gestion du formulaire de contact
 const contactForm = document.getElementById('contactForm');
@@ -176,4 +165,3 @@ document.querySelectorAll('.massage-card, .tarif-card').forEach(card => {
     card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     observer.observe(card);
 });
-
