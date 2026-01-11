@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Massage bien-être et relaxation - Prenez une pause dans votre quotidien">
+    <title>Massage Bien-être - Une Parenthèse de Détente</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>Une Parenthèse de Détente</h1>
+            </div>
+            <button class="menu-toggle" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="#accueil">Accueil</a></li>
+                <li><a href="#presentation">Présentation</a></li>
+                <li><a href="#massages">Massages</a></li>
+                <li><a href="#tarifs">Tarifs</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="accueil" class="hero">
+        <div class="hero-content">
+            <h2 class="hero-title">Des massages bien-être pour prendre soin de vous</h2>
+            <p class="hero-subtitle">Une expérience de relaxation et de reconnexion avec soi-même</p>
+            <div class="hero-quote">
+                <p>"Prendre soin de son corps, c'est donner envie à son âme d'y rester."</p>
+                <span class="quote-author">Proverbe indien</span>
+            </div>
+            <div class="hero-buttons">
+                <a href="#contact" class="btn btn-primary">Réserver un massage</a>
+                <a href="#tarifs" class="btn btn-secondary">Découvrir les tarifs</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Présentation Section -->
+    <section id="presentation" class="section">
+        <div class="container">
+            <h2 class="section-title">Bienvenue</h2>
+            <div class="presentation-content">
+                <div class="presentation-text">
+                    <p>
+                        Je suis praticienne certifiée en massage bien-être. J'ai créé ce lieu pour vous permettre 
+                        de vous offrir une pause, un moment de détente dans votre quotidien.
+                    </p>
+                    <p>
+                        Vous recevrez un massage, mais vous vivrez surtout une expérience complète de bien-être 
+                        et de relaxation dans un cadre chaleureux et bienveillant.
+                    </p>
+                    <p>
+                        Un espace entouré par la nature où vous pourrez rester après votre massage, le temps d'un 
+                        thé ou d'un café, pour lire ou simplement contempler la nature environnante.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Massages Section -->
+    <section id="massages" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Mes massages</h2>
+            <div class="massages-grid">
+                <div class="massage-card">
+                    <h3>Massage Relaxant</h3>
+                    <p>Un massage doux et enveloppant pour libérer les tensions et favoriser la détente profonde.</p>
+                </div>
+                <div class="massage-card">
+                    <h3>Massage Energisant</h3>
+                    <p>Un massage dynamique pour retrouver vitalité et énergie, idéal pour recharger vos batteries.</p>
+                </div>
+                <div class="massage-card">
+                    <h3>Massage Bien-être</h3>
+                    <p>Une approche globale du bien-être, combinant différentes techniques pour un moment de pure détente.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tarifs Section -->
+    <section id="tarifs" class="section">
+        <div class="container">
+            <h2 class="section-title">Tarifs</h2>
+            <div class="tarifs-grid">
+                <div class="tarif-card">
+                    <h3>30 minutes</h3>
+                    <p class="tarif-price">45€</p>
+                    <p class="tarif-desc">Une pause détente rapide</p>
+                </div>
+                <div class="tarif-card featured">
+                    <h3>60 minutes</h3>
+                    <p class="tarif-price">75€</p>
+                    <p class="tarif-desc">Le moment idéal de relaxation</p>
+                </div>
+                <div class="tarif-card">
+                    <h3>90 minutes</h3>
+                    <p class="tarif-price">105€</p>
+                    <p class="tarif-desc">Une expérience complète de bien-être</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title">Contact & Réservation</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Informations</h3>
+                    <p><strong>Adresse :</strong> Sur rendez-vous uniquement</p>
+                    <p><strong>Téléphone :</strong> 07 XX XX XX XX</p>
+                    <p><strong>Email :</strong> contact@example.com</p>
+                </div>
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Nom</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Envoyer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Une Parenthèse de Détente. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
+
